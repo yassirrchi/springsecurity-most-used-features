@@ -1,6 +1,6 @@
 package com.springsecurity.focus.springsecurityfocus.Controllers;
 
-import com.springsecurity.focus.springsecurityfocus.Controllers.Emtities.Employee;
+import com.springsecurity.focus.springsecurityfocus.Emtities.Employee;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

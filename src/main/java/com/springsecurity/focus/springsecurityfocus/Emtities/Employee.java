@@ -1,6 +1,11 @@
-package com.springsecurity.focus.springsecurityfocus.Controllers.Emtities;
+package com.springsecurity.focus.springsecurityfocus.Emtities;
 
 public class Employee {
+    @Override
+    public String toString() {
+        return  employeeid+" "+name;
+    }
+
     private final int employeeid;
     private final String name;
 
