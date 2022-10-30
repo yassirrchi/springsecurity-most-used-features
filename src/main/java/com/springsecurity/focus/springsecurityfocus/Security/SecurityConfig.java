@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -15,6 +16,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @EnableWebSecurity
 @Configuration
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 private final PasswordEncoder passwordEncoder;
 
@@ -27,18 +29,24 @@ private final PasswordEncoder passwordEncoder;
     @Bean
     protected UserDetailsService userDetailsService() {
       UserDetails yassirRchi=  User.builder()
-                .username("Yassir")
+                .username("yassir")
                 .password(passwordEncoder.encode("123"))
-                .roles(AppUserRole.EMPLOYEE.name()).build();
+              .authorities(AppUserRole.ADMIN.getGrantedAuthorities())
+                //.roles(AppUserRole.ADMIN.name())
+          .build();
         UserDetails yahyaRchi=  User.builder()
                 .username("yahya")
                 .password(passwordEncoder.encode("123"))
-                .roles(AppUserRole.ADMIN.name()).build();
+                .authorities(AppUserRole.EMPLOYEE.getGrantedAuthorities())
+              //  .roles(AppUserRole.EMPLOYEE.name())
+         .build();
         UserDetails adminTrainee=  User.builder()
                 .username("trainee")
                 .password(passwordEncoder.encode("123"))
-                .roles(AppUserRole.ADMINTRAINEE.name()).build();
-        return new InMemoryUserDetailsManager(yassirRchi,yahyaRchi);
+                .authorities(AppUserRole.ADMINTRAINEE.getGrantedAuthorities())
+                //.roles(AppUserRole.ADMINTRAINEE.name())
+               .build();
+        return new InMemoryUserDetailsManager(yassirRchi,yahyaRchi,adminTrainee);
     }
 
     @Override
@@ -46,17 +54,17 @@ private final PasswordEncoder passwordEncoder;
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests().
-                antMatchers("/","index","/css/*","/js/*").permitAll().
-                 antMatchers("/api/**").hasRole(AppUserRole.EMPLOYEE.name()).
-                 antMatchers(HttpMethod.DELETE,"/management/api/**").hasAuthority(AppUserPresmission.CONTENT_WRITE.name())
-                .antMatchers(HttpMethod.PUT,"/management/api/**").hasAuthority(AppUserPresmission.CONTENT_WRITE.name())
-                . antMatchers(HttpMethod.POST,"/management/api/**").hasAuthority(AppUserPresmission.CONTENT_WRITE.name())
-                .antMatchers(HttpMethod.GET,"/management/api/**").hasAnyRole(AppUserRole.ADMINTRAINEE.name())
+                antMatchers("/","index","/css/*","/js/*").permitAll()
+                .antMatchers("/api/**").hasRole(AppUserRole.EMPLOYEE.name())
+                //.antMatchers(HttpMethod.DELETE,"/management/api/**").hasAuthority(AppUserPresmission.CONTENT_WRITE.getPermission())
+                //.antMatchers(HttpMethod.PUT,"/management/api/**").hasAuthority(AppUserPresmission.CONTENT_WRITE.getPermission())
+                //.antMatchers(HttpMethod.POST,"/management/api/**").hasAuthority(AppUserPresmission.CONTENT_WRITE.getPermission())
+                //.antMatchers(HttpMethod.GET,"/management/api/**").hasAnyRole(AppUserRole.ADMIN.name(),AppUserRole.ADMINTRAINEE.name())
 
     . anyRequest().
                 authenticated().
                 and().
-                httpBasic();
+                formLogin();
 
     }
 }

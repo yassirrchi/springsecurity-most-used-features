@@ -1,4 +1,4 @@
-package com.springsecurity.focus.springsecurityfocus.Emtities;
+package com.springsecurity.focus.springsecurityfocus.Entities;
 
 public class Employee {
     @Override
